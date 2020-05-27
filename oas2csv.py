@@ -9,7 +9,7 @@ args = parser.parse_args()
 
 schemaNameIdMap = {}
 
-def handle_oas_property(oas_property, oas_property_name=None):
+def handle_oas_property(oas_property, oas_property_name=None, property_object_required=None):
     oas_property_type = oas_property.get('type')
 
     validation_extras = {}
@@ -17,6 +17,8 @@ def handle_oas_property(oas_property, oas_property_name=None):
     property_nullable = oas_property.get('nullable')
     if property_nullable != None:
         validation_extras['nullable'] = property_nullable
+    if property_object_required != None:
+        validation_extras['object_required'] = property_object_required
 
     if oas_property_type == 'string':
         string_min_length = oas_property.get('minLength')
@@ -105,8 +107,9 @@ def handle_oas_property(oas_property, oas_property_name=None):
 
     elif oas_property_type == 'object':
         oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='object')
+        requried_properties = oas_property.get('required')
         for prop_name, prop in oas_property.get('properties', {}).items():
-            partial_property_id = handle_oas_property(prop, prop_name)
+            partial_property_id = handle_oas_property(prop, prop_name, True if requried_properties != None and prop_name in requried_properties else None)
             OasPolymorphicProperty.add(property_id=oas_property_id, partial_property_id=partial_property_id)
         return oas_property_id
 

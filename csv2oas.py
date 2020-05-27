@@ -110,10 +110,17 @@ def property_id_to_spec(property_id):
         oas_polymorphic_properties = OasPolymorphicProperty.findDict(property_id=oas_property.get('id'))
         if len(oas_polymorphic_properties) > 0:
             property_spec['properties'] = {}
+            required_properties = []
             for oas_polymorphic_property in oas_polymorphic_properties:
                 partial_property_id = oas_polymorphic_property.get('partial_property_id')
                 partial_property = OasProperty.findDictById(partial_property_id)
-                property_spec['properties'][partial_property.get('property_name')] = property_id_to_spec(partial_property_id)
+                partial_property_name = partial_property.get('property_name')
+                partial_property_required = partial_property.get('object_required')
+                if partial_property_required != None and str2bool(partial_property_required):
+                    required_properties.append(partial_property_name)
+                property_spec['properties'][partial_property_name] = property_id_to_spec(partial_property_id)
+            if len(required_properties) > 0:
+                property_spec['required'] = required_properties
         return property_spec
 
     elif oas_property_type == 'oneOf':

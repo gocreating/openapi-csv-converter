@@ -10,7 +10,7 @@ OasSchema = Table(
 )
 OasProperty = Table(
     'oas_property',
-    'id,property_name,data_type,nullable,string_min_length,string_max_length,string_format,string_pattern,string_enum,number_format,number_minimum,number_exclusive_minimum,number_maximum,number_exclusive_maximum,number_multiple_of,integer_format,integer_minimum,integer_exclusive_minimum,integer_maximum,integer_exclusive_maximum,integer_multiple_of'
+    'id,property_name,data_type,nullable,string_min_length,string_max_length,string_format,string_pattern,string_enum,number_format,number_minimum,number_exclusive_minimum,number_maximum,number_exclusive_maximum,number_multiple_of,integer_format,integer_minimum,integer_exclusive_minimum,integer_maximum,integer_exclusive_maximum,integer_multiple_of,object_required'
 )
 OasPolymorphicProperty = Table(
     'oas_polymorphic_property',
