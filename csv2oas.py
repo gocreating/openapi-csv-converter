@@ -40,11 +40,12 @@ def property_id_to_spec(property_id):
     elif oas_property_type == 'object':
         property_spec['type'] = 'object'
         oas_polymorphic_properties = OasPolymorphicProperty.findDict(property_id=oas_property.get('id'))
-        property_spec['properties'] = {}
-        for oas_polymorphic_property in oas_polymorphic_properties:
-            partial_property_id = oas_polymorphic_property.get('partial_property_id')
-            partial_property = OasProperty.findDictById(partial_property_id)
-            property_spec['properties'][partial_property.get('property_name')] = property_id_to_spec(partial_property_id)
+        if len(oas_polymorphic_properties) > 0:
+            property_spec['properties'] = {}
+            for oas_polymorphic_property in oas_polymorphic_properties:
+                partial_property_id = oas_polymorphic_property.get('partial_property_id')
+                partial_property = OasProperty.findDictById(partial_property_id)
+                property_spec['properties'][partial_property.get('property_name')] = property_id_to_spec(partial_property_id)
         return property_spec
 
     elif oas_property_type == 'oneOf':
