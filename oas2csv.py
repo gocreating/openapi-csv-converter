@@ -37,7 +37,7 @@ def handle_oas_property(oas_property, oas_property_name=None):
 
     elif oas_property_type == 'object':
         oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='object')
-        for prop_name, prop in oas_property.get('properties').items():
+        for prop_name, prop in oas_property.get('properties', {}).items():
             partial_property_id = handle_oas_property(prop, prop_name)
             OasPolymorphicProperty.add(property_id=oas_property_id, partial_property_id=partial_property_id)
         return oas_property_id
