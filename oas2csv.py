@@ -65,18 +65,27 @@ def handle_oas_property(oas_property, oas_property_name=None):
 
     elif oas_property.get('$ref'):
         oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='$ref')
-        schemaName = oas_property.get('$ref').replace('#/components/schemas/', '')
-        OasPolymorphicProperty.add(property_id=oas_property_id, ref_schema_id=schemaNameIdMap.get(schemaName))
+        schema_name = oas_property.get('$ref').replace('#/components/schemas/', '')
+        ref_schema_id = schemaNameIdMap.get(schema_name)
+        OasPolymorphicProperty.add(property_id=oas_property_id, ref_schema_id=ref_schema_id)
         return oas_property_id
 
     else:
         raise Exception('Invalid property.')
 
-def handle_oas_component_schema(schemas):
+def handle_oas_component_schemas(schemas):
+    # To prevent circular reference,
+    # schema should be created breadth-firstly
     for schema_name, schema in schemas.items():
-        oas_property_id = handle_oas_property(schema)
-        oas_schema_id = OasSchema.add(schema_name=schema_name, property_id=oas_property_id)
+        oas_schema_id = OasSchema.add(schema_name=schema_name)
         schemaNameIdMap[schema_name] = oas_schema_id
+
+    # Then, lazy updated schema's properties
+    for schema_name, schema in schemas.items():
+        schema_id = schemaNameIdMap.get(schema_name)
+        schema = spec.get('components', {}).get('schemas').get(schema_name)
+        oas_property_id = handle_oas_property(schema)
+        OasSchema.updateById(schema_id, property_id=oas_property_id)
 
 def handle_oas_path(paths):
     for path_name, path in paths.items():
@@ -87,7 +96,7 @@ def handle_oas_path(paths):
             OasPath.add(platform_id='odhk', oas_path=path_name, oas_operation=operation_name, enable=True, request_body_schema_id=oas_schema_id)
 
 def oas2csv(spec):
-    handle_oas_component_schema(spec.get('components', {}).get('schemas'))
+    handle_oas_component_schemas(spec.get('components', {}).get('schemas'))
     handle_oas_path(spec.get('paths'))
 
     OasPath.persist()
