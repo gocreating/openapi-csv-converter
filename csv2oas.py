@@ -1,11 +1,9 @@
 import yaml
 
+from utils import str2bool
 from models import OasPath, OasSchema, OasProperty, OasPolymorphicProperty
 
 spec = {}
-
-def str2bool(s):
-    return s.lower() in ('true',)
 
 def property_id_to_spec(property_id):
     oas_property = OasProperty.findDictById(property_id)
@@ -111,6 +109,7 @@ def property_id_to_spec(property_id):
         if len(oas_polymorphic_properties) > 0:
             property_spec['properties'] = {}
             required_properties = []
+
             for oas_polymorphic_property in oas_polymorphic_properties:
                 partial_property_id = oas_polymorphic_property.get('partial_property_id')
                 partial_property = OasProperty.findDictById(partial_property_id)
@@ -121,6 +120,9 @@ def property_id_to_spec(property_id):
                 property_spec['properties'][partial_property_name] = property_id_to_spec(partial_property_id)
             if len(required_properties) > 0:
                 property_spec['required'] = required_properties
+            additional_properties = oas_property.get('object_additional_properties')
+            if additional_properties != None:
+                property_spec['additionalProperties'] = str2bool(additional_properties)
         return property_spec
 
     elif oas_property_type == 'oneOf':

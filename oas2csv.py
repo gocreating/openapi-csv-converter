@@ -1,6 +1,7 @@
 import yaml
 
 from argparse import ArgumentParser
+from utils import str2bool
 from models import OasPath, OasSchema, OasProperty, OasPolymorphicProperty
 
 parser = ArgumentParser()
@@ -106,7 +107,8 @@ def handle_oas_property(oas_property, oas_property_name=None, property_object_re
         return oas_property_id
 
     elif oas_property_type == 'object':
-        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='object')
+        additional_properties = oas_property.get('additionalProperties')
+        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='object', object_additional_properties=additional_properties if additional_properties != None else None)
         requried_properties = oas_property.get('required')
         for prop_name, prop in oas_property.get('properties', {}).items():
             partial_property_id = handle_oas_property(prop, prop_name, True if requried_properties != None and prop_name in requried_properties else None)
