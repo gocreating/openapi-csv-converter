@@ -1,0 +1,4 @@
+id ,schema_name          ,property_id/id
+1  ,Schema1              ,30
+2  ,Schema2              ,31
+3  ,(path1_request_body) ,34
