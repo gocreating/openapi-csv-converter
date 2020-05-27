@@ -1,0 +1,42 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "OAS to CSV",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": false,
+            "pythonPath": "${config:python.interpreterPath}",
+            "program": "${workspaceRoot}/oas2csv.py",
+            "args": [
+                "-s",
+                "./sample/source-oas.yaml"
+            ],
+            "cwd": "${workspaceRoot}",
+            "justMyCode": true
+        },
+        {
+            "name": "CSV to OAS",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": false,
+            "pythonPath": "${config:python.interpreterPath}",
+            "program": "${workspaceRoot}/csv2oas.py",
+            "cwd": "${workspaceRoot}",
+            "justMyCode": true
+        },
+        {
+            "name": "Run Test",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "test_conversion.py"
+            ],
+            "pythonPath": "${config:python.interpreterPath}",
+        },
+    ]
+}
