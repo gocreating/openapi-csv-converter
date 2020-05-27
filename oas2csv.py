@@ -28,6 +28,11 @@ def handle_oas_property(oas_property, oas_property_name=None):
         oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='boolean')
         return oas_property_id
 
+    # valid type in json schema
+    elif oas_property_type == 'null':
+        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='null')
+        return oas_property_id
+
     elif oas_property_type == 'array':
         oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='array')
         prop = oas_property.get('items')
@@ -96,9 +101,9 @@ def handle_oas_path(paths):
                 multipart_content = request_body.get('content', {}).get('multipart/form-data')
                 if json_content:
                     json_request_body_schema = json_content.get('schema')
-            oas_property_id = handle_oas_property(json_request_body_schema)
-            oas_schema_id = OasSchema.add(property_id=oas_property_id)
-            OasPath.add(platform_id='odhk', oas_path=path_name, oas_operation=operation_name, enable=True, request_body_schema_id=oas_schema_id)
+                    oas_property_id = handle_oas_property(json_request_body_schema)
+                    oas_schema_id = OasSchema.add(property_id=oas_property_id)
+                    OasPath.add(platform_id='odhk', oas_path=path_name, oas_operation=operation_name, enable=True, request_body_schema_id=oas_schema_id)
                 if multipart_content:
                     print('Multipart is ignored by converter.')
 

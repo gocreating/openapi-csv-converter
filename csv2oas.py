@@ -25,6 +25,11 @@ def property_id_to_spec(property_id):
         property_spec['type'] = 'boolean'
         return property_spec
 
+    # valid type in json schema
+    elif oas_property_type == 'null':
+        property_spec['type'] = 'null'
+        return property_spec
+
     elif oas_property_type == 'array':
         property_spec['type'] = 'array'
         oas_polymorphic_properties = OasPolymorphicProperty.findDict(property_id=oas_property.get('id'))
