@@ -90,10 +90,17 @@ def handle_oas_component_schemas(schemas):
 def handle_oas_path(paths):
     for path_name, path in paths.items():
         for operation_name, operation in paths.get(path_name).items():
-            json_request_body_schema = operation.get('requestBody', {}).get('content', {}).get('application/json', {}).get('schema')
+            request_body = operation.get('requestBody')
+            if request_body:
+                json_content = request_body.get('content', {}).get('application/json')
+                multipart_content = request_body.get('content', {}).get('multipart/form-data')
+                if json_content:
+                    json_request_body_schema = json_content.get('schema')
             oas_property_id = handle_oas_property(json_request_body_schema)
             oas_schema_id = OasSchema.add(property_id=oas_property_id)
             OasPath.add(platform_id='odhk', oas_path=path_name, oas_operation=operation_name, enable=True, request_body_schema_id=oas_schema_id)
+                if multipart_content:
+                    print('Multipart is ignored by converter.')
 
 def oas2csv(spec):
     handle_oas_component_schemas(spec.get('components', {}).get('schemas'))
