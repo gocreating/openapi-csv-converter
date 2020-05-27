@@ -10,8 +10,8 @@ class TestConversion(unittest.TestCase):
         with open('./build/oas.yaml') as yaml_file:
             converted_spec = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
-        # Asset components
-        self.assertDictEqual(raw_spec['components'], converted_spec['components'])
+        # Asset components.schemas
+        self.assertDictEqual(raw_spec['components']['schemas'], converted_spec['components']['schemas'])
 
         # Assert `requestBody` only (responses are not supported yet)
         for path_name, path in raw_spec['paths'].items():
