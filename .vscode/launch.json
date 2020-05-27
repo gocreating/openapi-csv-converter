@@ -34,7 +34,7 @@
             "request": "launch",
             "module": "pytest",
             "args": [
-                "test_conversion.py"
+                "test_converter.py"
             ],
             "pythonPath": "${config:python.interpreterPath}",
         },
