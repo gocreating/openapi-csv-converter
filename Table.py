@@ -67,7 +67,7 @@ class Table():
         with open(f'{BASE_DIR}/{self.table_name}.csv', 'r', newline='') as csvfile:
             reader = csv.reader(csvfile)
             next(reader) # skip header
-            self.rows = [row for row in reader]
+            self.rows = [[cell if cell != '' else None for cell in row] for row in reader]
 
     def persist(self):
         with open(f'{BASE_DIR}/{self.table_name}.csv', 'w', newline='') as csvFile:

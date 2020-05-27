@@ -12,16 +12,79 @@ schemaNameIdMap = {}
 def handle_oas_property(oas_property, oas_property_name=None):
     oas_property_type = oas_property.get('type')
 
+    validation_extras = {}
+
+    property_nullable = oas_property.get('nullable')
+    if property_nullable != None:
+        validation_extras['nullable'] = property_nullable
+
     if oas_property_type == 'string':
-        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='string')
+        string_min_length = oas_property.get('minLength')
+        string_max_length = oas_property.get('maxLength')
+        string_format = oas_property.get('format')
+        string_pattern = oas_property.get('pattern')
+        string_enums = oas_property.get('enum')
+
+        if string_min_length != None:
+            validation_extras['string_min_length'] = string_min_length
+        if string_max_length != None:
+            validation_extras['string_max_length'] = string_max_length
+        if string_format != None:
+            validation_extras['string_format'] = string_format
+        if string_pattern != None:
+            validation_extras['string_pattern'] = string_pattern
+        if string_enums != None:
+            validation_extras['string_enum'] = ','.join(string_enums)
+
+        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='string', **validation_extras)
         return oas_property_id
 
     elif oas_property_type == 'number':
-        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='number')
+        number_format = oas_property.get('format')
+        number_minimum = oas_property.get('minimum')
+        number_exclusive_minimum = oas_property.get('exclusiveMinimum')
+        number_maximum = oas_property.get('maximum')
+        number_exclusive_maximum = oas_property.get('exclusiveMaximum')
+        number_multiple_of = oas_property.get('multipleOf')
+
+        if number_format != None:
+            validation_extras['number_format'] = number_format
+        if number_minimum != None:
+            validation_extras['number_minimum'] = number_minimum
+        if number_exclusive_minimum != None:
+            validation_extras['number_exclusive_minimum'] = number_exclusive_minimum
+        if number_maximum != None:
+            validation_extras['number_maximum'] = number_maximum
+        if number_exclusive_maximum != None:
+            validation_extras['number_exclusive_maximum'] = number_exclusive_maximum
+        if number_multiple_of != None:
+            validation_extras['number_multiple_of'] = number_multiple_of
+
+        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='number', **validation_extras)
         return oas_property_id
 
     elif oas_property_type == 'integer':
-        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='integer')
+        integer_format = oas_property.get('format')
+        integer_minimum = oas_property.get('minimum')
+        integer_exclusive_minimum = oas_property.get('exclusiveMinimum')
+        integer_maximum = oas_property.get('maximum')
+        integer_exclusive_maximum = oas_property.get('exclusiveMaximum')
+        integer_multiple_of = oas_property.get('multipleOf')
+
+        if integer_format != None:
+            validation_extras['integer_format'] = integer_format
+        if integer_minimum != None:
+            validation_extras['integer_minimum'] = integer_minimum
+        if integer_exclusive_minimum != None:
+            validation_extras['integer_exclusive_minimum'] = integer_exclusive_minimum
+        if integer_maximum != None:
+            validation_extras['integer_maximum'] = integer_maximum
+        if integer_exclusive_maximum != None:
+            validation_extras['integer_exclusive_maximum'] = integer_exclusive_maximum
+        if integer_multiple_of != None:
+            validation_extras['integer_multiple_of'] = integer_multiple_of
+
+        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='integer', **validation_extras)
         return oas_property_id
 
     elif oas_property_type == 'boolean':
