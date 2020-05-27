@@ -45,6 +45,24 @@ class Table():
         self.auto_increment_number += 1
         return row[0]
 
+    def updateById(self, id, **kwargs):
+        find_index = None
+        row = None
+        for i in range(len(self.rows)):
+            if self.rows[i][0] == id:
+                find_index = i
+                row = self.rows[i]
+                break
+
+        if find_index == None:
+            raise Exception('Id not found')
+
+        for i in range(len(self.columns)):
+            column_name = self.columns[i]
+            new_value = kwargs.get(column_name)
+            if new_value != None:
+                row[i] = new_value
+
     def load(self):
         with open(f'{BASE_DIR}/{self.table_name}.csv', 'r', newline='') as csvfile:
             reader = csv.reader(csvfile)
