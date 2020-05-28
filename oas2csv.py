@@ -1,4 +1,5 @@
 import yaml
+import json
 
 from argparse import ArgumentParser
 from utils import str2bool, ref2schema_name
@@ -207,6 +208,10 @@ def oas2csv(spec):
     OasPolymorphicProperty.persist()
     OasDiscriminatorMapping.persist()
 
-with open(args.spec_path) as yaml_file:
-    spec = yaml.load(yaml_file, Loader=yaml.FullLoader)
+with open(args.spec_path) as input_file:
+    file_format = args.spec_path.split('.')[-1]
+    if file_format == 'json':
+        spec = json.load(input_file)
+    elif file_format == 'yaml':
+        spec = yaml.load(input_file, Loader=yaml.FullLoader)
 oas2csv(spec)
