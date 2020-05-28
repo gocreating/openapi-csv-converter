@@ -22,6 +22,13 @@ components:
       type: array
       items:
         type: string
+    Schema3:
+      type: object
+      properties:
+        s3_p1:
+          type: number
+        s3_p2:
+          $ref: '#/components/schemas/Schema3'
 
 paths:
   /path1:
@@ -88,6 +95,8 @@ paths:
                     - $ref: '#/components/schemas/Schema1'
                 p10:
                   $ref: '#/components/schemas/Schema2'
+                p11:
+                  $ref: '#/components/schemas/Schema3'
       responses:
         '200':
           description: response description

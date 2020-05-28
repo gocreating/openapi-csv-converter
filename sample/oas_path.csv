@@ -1,2 +1,0 @@
-id ,platform_id/id ,oas_path ,oas_operation ,enable ,request_body_schema_id/id
-1  ,odhk           ,/path1   ,post          ,True   ,3
