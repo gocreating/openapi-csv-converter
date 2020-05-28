@@ -152,6 +152,12 @@ def property_id_to_spec(property_id):
             property_spec['allOf'].append(property_id_to_spec(partial_property_id))
         return { **property_spec, **validation_extras }
 
+    elif oas_property_type == 'not':
+        oas_polymorphic_properties = OasPolymorphicProperty.findDict(property_id=oas_property.get('id'))
+        partial_property_id = oas_polymorphic_properties[0].get('partial_property_id')
+        property_spec['not'] = property_id_to_spec(partial_property_id)
+        return { **property_spec, **validation_extras }
+
     elif oas_property_type == '$ref':
         oas_polymorphic_properties = OasPolymorphicProperty.findDict(property_id=oas_property.get('id'))
         ref_schema_id = oas_polymorphic_properties[0].get('ref_schema_id')

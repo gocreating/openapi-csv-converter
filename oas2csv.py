@@ -139,6 +139,12 @@ def handle_oas_property(oas_property, oas_property_name=None, property_object_re
             OasPolymorphicProperty.add(property_id=oas_property_id, partial_property_id=partial_property_id)
         return oas_property_id
 
+    elif oas_property.get('not'):
+        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='not', **validation_extras)
+        partial_property_id = handle_oas_property(oas_property.get('not'))
+        OasPolymorphicProperty.add(property_id=oas_property_id, partial_property_id=partial_property_id)
+        return oas_property_id
+
     elif oas_property.get('$ref'):
         oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='$ref', **validation_extras)
         schema_name = oas_property.get('$ref').replace('#/components/schemas/', '')
