@@ -136,8 +136,8 @@ paths:
                 # oneOf with discriminator
                 p14:
                   oneOf:
-                    - type: string
-                    - type: number
+                    - $ref: '#/components/schemas/Object1'
+                    - $ref: '#/components/schemas/Object2'
                   discriminator:
                     propertyName: objectType
                     mapping:
