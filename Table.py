@@ -3,9 +3,10 @@ import csv
 BASE_DIR = 'build'
 
 class Table():
-    def __init__(self, table_name, columns):
+    def __init__(self, table_name, columns, foreign_columns):
         self.table_name = table_name
         self.columns = [column.strip() for column in columns.split(',')]
+        self.foreign_columns = [column.strip() for column in foreign_columns.split(',')]
         self.rows = []
         self.auto_increment_number = 0
 
@@ -72,5 +73,5 @@ class Table():
     def persist(self):
         with open(f'{BASE_DIR}/{self.table_name}.csv', 'w', newline='') as csvFile:
             writer = csv.writer(csvFile)
-            writer.writerow(self.columns)
+            writer.writerow([f'{column}/id' if column in self.foreign_columns else column for column in self.columns])
             writer.writerows(self.rows)
