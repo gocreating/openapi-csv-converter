@@ -1,4 +1,5 @@
 import yaml
+import json
 
 from utils import str2bool
 from models import OasPath, OasSchema, OasProperty, OasPolymorphicProperty
@@ -200,5 +201,6 @@ def csv2oas():
 
     with open('build/oas.yaml', 'w') as yaml_file:
         yaml.dump(spec, yaml_file, allow_unicode=True)
-
+    with open('build/oas.json', 'w') as json_file:
+        json.dump(spec, json_file)
 csv2oas()
