@@ -1,8 +1,8 @@
 import yaml
 
 from argparse import ArgumentParser
-from utils import str2bool
-from models import OasPath, OasSchema, OasProperty, OasPolymorphicProperty
+from utils import str2bool, ref2schema_name
+from models import OasPath, OasSchema, OasProperty, OasPolymorphicProperty, OasDiscriminatorMapping
 
 parser = ArgumentParser()
 parser.add_argument("-s", "--spec-file", dest="spec_path")
@@ -119,7 +119,20 @@ def handle_oas_property(oas_property, oas_property_name=None, property_object_re
         return oas_property_id
 
     elif oas_property.get('oneOf'):
-        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='oneOf', **validation_extras)
+        discriminator = oas_property.get('discriminator', {})
+        discriminator_property_name = discriminator.get('propertyName')
+        discriminator_mapping = discriminator.get('mapping')
+        oas_property_id = OasProperty.add(property_name=oas_property_name,
+                                          data_type='oneOf',
+                                          one_of_discriminator_property_name=discriminator_property_name if discriminator_property_name != None else None,
+                                          **validation_extras)
+        if discriminator_mapping:
+            for discriminator_property_value, mapping_ref in discriminator_mapping.items():
+                schema_name = ref2schema_name(mapping_ref)
+                red_schema_id = schemaNameIdMap.get(schema_name)
+                OasDiscriminatorMapping.add(property_id=oas_property_id,
+                                            discriminator_property_value=discriminator_property_value,
+                                            ref_schema_id=red_schema_id)
         for prop in oas_property.get('oneOf'):
             partial_property_id = handle_oas_property(prop)
             OasPolymorphicProperty.add(property_id=oas_property_id, partial_property_id=partial_property_id)
@@ -147,7 +160,7 @@ def handle_oas_property(oas_property, oas_property_name=None, property_object_re
 
     elif oas_property.get('$ref'):
         oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='$ref', **validation_extras)
-        schema_name = oas_property.get('$ref').replace('#/components/schemas/', '')
+        schema_name = ref2schema_name(oas_property.get('$ref'))
         ref_schema_id = schemaNameIdMap.get(schema_name)
         OasPolymorphicProperty.add(property_id=oas_property_id, ref_schema_id=ref_schema_id)
         return oas_property_id
@@ -192,6 +205,7 @@ def oas2csv(spec):
     OasSchema.persist()
     OasProperty.persist()
     OasPolymorphicProperty.persist()
+    OasDiscriminatorMapping.persist()
 
 with open(args.spec_path) as yaml_file:
     spec = yaml.load(yaml_file, Loader=yaml.FullLoader)

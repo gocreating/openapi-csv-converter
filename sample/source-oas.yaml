@@ -33,6 +33,24 @@ components:
         s3_p2:
           # circular reference
           $ref: '#/components/schemas/Schema3'
+    Object1:
+      type: object
+      properties:
+        objectType:
+          type: string
+        obj1_p1:
+          type: integer
+      required:
+        - objectType
+    Object2:
+      type: object
+      properties:
+        objectType:
+          type: string
+        obj2_p1:
+          type: number
+      required:
+        - objectType
 
 paths:
   /path1:
@@ -80,35 +98,55 @@ paths:
                         p6_nested_2_1:
                           type: string
 
-                # porlymorphic types
+                # reference
                 p7:
+                  $ref: '#/components/schemas/Schema2'
+                p8:
+                  $ref: '#/components/schemas/Schema3'
+
+                # porlymorphic types
+                p9:
                   oneOf:
                     - type: string
                     - type: number
-                p8:
+                p10:
                   anyOf:
                     - type: string
                     - type: number
-                p9:
+                p11:
                   allOf:
                     - type: object
                       properties:
-                        p9_1:
+                        p11_1:
                           type: string
                     - type: object
                       properties:
-                        p9_2:
+                        p11_2:
                           type: number
                     - $ref: '#/components/schemas/Schema1'
+                p12:
+                  not:
+                    type: string
+                p13:
+                  not:
+                    oneOf:
+                      - type: string
+                      - type: boolean
 
-                # reference
-                p10:
-                  $ref: '#/components/schemas/Schema2'
-                p11:
-                  $ref: '#/components/schemas/Schema3'
+                # oneOf with discriminator
+                p14:
+                  oneOf:
+                    - type: string
+                    - type: number
+                  discriminator:
+                    propertyName: objectType
+                    mapping:
+                      # mapping values are string only. We don't need to handle inline schema.
+                      obj1: '#/components/schemas/Object1'
+                      obj2: '#/components/schemas/Object2'
 
                 # jsonschema only types
-                p12:
+                p15:
                   type: 'null'
       responses:
         '200':

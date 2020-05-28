@@ -1,8 +1,8 @@
 import yaml
 import json
 
-from utils import str2bool
-from models import OasPath, OasSchema, OasProperty, OasPolymorphicProperty
+from utils import str2bool, schema_name2ref
+from models import OasPath, OasSchema, OasProperty, OasPolymorphicProperty, OasDiscriminatorMapping
 
 spec = {}
 
@@ -134,6 +134,20 @@ def property_id_to_spec(property_id):
         for oas_polymorphic_property in oas_polymorphic_properties:
             partial_property_id = oas_polymorphic_property.get('partial_property_id')
             property_spec['oneOf'].append(property_id_to_spec(partial_property_id))
+
+        discriminator_property_name = oas_property.get('one_of_discriminator_property_name')
+        if discriminator_property_name != None:
+            property_spec['discriminator'] = {
+                'propertyName': discriminator_property_name,
+                'mapping': {}
+            }
+            oas_discriminator_mappings = OasDiscriminatorMapping.findDict(property_id=oas_property.get('id'))
+            for oas_discriminator_mapping in oas_discriminator_mappings:
+                discriminator_property_value = oas_discriminator_mapping.get('discriminator_property_value')
+                ref_schema_id = oas_discriminator_mapping.get('ref_schema_id')
+                ref_schema_name = OasSchema.findDictById(ref_schema_id).get('schema_name')
+                property_spec['discriminator']['mapping'][discriminator_property_value] = schema_name2ref(ref_schema_name)
+
         return { **property_spec, **validation_extras }
 
     elif oas_property_type == 'anyOf':
@@ -163,7 +177,7 @@ def property_id_to_spec(property_id):
         ref_schema_id = oas_polymorphic_properties[0].get('ref_schema_id')
         ref_schema = OasSchema.findDictById(ref_schema_id)
         ref_schema_name = ref_schema.get('schema_name')
-        property_spec['$ref'] = f'#/components/schemas/{ref_schema_name}'
+        property_spec['$ref'] = schema_name2ref(ref_schema_name)
         return { **property_spec, **validation_extras }
 
     else:
@@ -201,6 +215,7 @@ def csv2oas():
     OasSchema.load()
     OasProperty.load()
     OasPolymorphicProperty.load()
+    OasDiscriminatorMapping.load()
 
     handle_oas_component_schema()
     handle_oas_path_schema()
