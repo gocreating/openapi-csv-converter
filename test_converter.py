@@ -1,17 +1,21 @@
+import os
 import yaml
 import unittest
 
-class TestConversion(unittest.TestCase):
+class TestConverter(unittest.TestCase):
     maxDiff = None
+    S1 = os.environ.get('S1')
+    S2 = os.environ.get('S2')
 
-    def test_conversion(self):
-        with open('./sample/source-oas.yaml') as yaml_file:
+    def test_converter(self):
+        with open(self.S1) as yaml_file:
             raw_spec = yaml.load(yaml_file, Loader=yaml.FullLoader)
-        with open('./build/oas.yaml') as yaml_file:
+        with open(self.S2) as yaml_file:
             converted_spec = yaml.load(yaml_file, Loader=yaml.FullLoader)
 
         # Asset components.schemas
-        self.assertDictEqual(raw_spec['components']['schemas'], converted_spec['components']['schemas'])
+        for schema_name, schema_spec in raw_spec['components']['schemas'].items():
+            self.assertDictEqual(schema_spec, converted_spec['components']['schemas'][schema_name])
 
         # Assert `requestBody` only (responses are not supported yet)
         for path_name, path in raw_spec['paths'].items():

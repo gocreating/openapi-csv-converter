@@ -36,6 +36,10 @@
             "args": [
                 "test_converter.py"
             ],
+            "env": {
+                "S1": "sample/source-oas.yaml",
+                "S2": "build/oas.yaml",
+            },
             "pythonPath": "${config:python.interpreterPath}",
         },
     ]

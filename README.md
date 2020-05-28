@@ -31,6 +31,8 @@ python csv2oas.py
 
 ## Test
 
+Please convert csv to openapi spec first, and then run:
+
 ```
-pytest test_converter.py
+S1="sample/source-oas.yaml" S2="build/oas.yaml" pytest test_converter.py
 ```
