@@ -1,10 +1,12 @@
 attrs==19.3.0
 importlib-metadata==1.6.0
+jsonschema==3.2.0
 more-itertools==8.3.0
 packaging==20.4
 pluggy==0.13.1
 py==1.8.1
 pyparsing==2.4.7
+pyrsistent==0.16.0
 pytest==5.4.2
 PyYAML==5.3.1
 six==1.15.0
