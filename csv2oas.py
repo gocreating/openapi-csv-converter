@@ -89,19 +89,19 @@ def property_id_to_spec(property_id):
 
     elif oas_property_type == 'boolean':
         property_spec['type'] = 'boolean'
-        return property_spec
+        return { **property_spec, **validation_extras }
 
     # valid type in json schema
     elif oas_property_type == 'null':
         property_spec['type'] = 'null'
-        return property_spec
+        return { **property_spec, **validation_extras }
 
     elif oas_property_type == 'array':
         property_spec['type'] = 'array'
         oas_polymorphic_properties = OasPolymorphicProperty.findDict(property_id=oas_property.get('id'))
         for oas_polymorphic_property in oas_polymorphic_properties:
             property_spec['items'] = property_id_to_spec(oas_polymorphic_property.get('partial_property_id'))
-        return property_spec
+        return { **property_spec, **validation_extras }
 
     elif oas_property_type == 'object':
         property_spec['type'] = 'object'
@@ -123,7 +123,7 @@ def property_id_to_spec(property_id):
             additional_properties = oas_property.get('object_additional_properties')
             if additional_properties != None:
                 property_spec['additionalProperties'] = str2bool(additional_properties)
-        return property_spec
+        return { **property_spec, **validation_extras }
 
     elif oas_property_type == 'oneOf':
         property_spec['oneOf'] = []
@@ -131,7 +131,7 @@ def property_id_to_spec(property_id):
         for oas_polymorphic_property in oas_polymorphic_properties:
             partial_property_id = oas_polymorphic_property.get('partial_property_id')
             property_spec['oneOf'].append(property_id_to_spec(partial_property_id))
-        return property_spec
+        return { **property_spec, **validation_extras }
 
     elif oas_property_type == 'anyOf':
         property_spec['anyOf'] = []
@@ -139,7 +139,7 @@ def property_id_to_spec(property_id):
         for oas_polymorphic_property in oas_polymorphic_properties:
             partial_property_id = oas_polymorphic_property.get('partial_property_id')
             property_spec['anyOf'].append(property_id_to_spec(partial_property_id))
-        return property_spec
+        return { **property_spec, **validation_extras }
 
     elif oas_property_type == 'allOf':
         property_spec['allOf'] = []
@@ -147,7 +147,7 @@ def property_id_to_spec(property_id):
         for oas_polymorphic_property in oas_polymorphic_properties:
             partial_property_id = oas_polymorphic_property.get('partial_property_id')
             property_spec['allOf'].append(property_id_to_spec(partial_property_id))
-        return property_spec
+        return { **property_spec, **validation_extras }
 
     elif oas_property_type == '$ref':
         oas_polymorphic_properties = OasPolymorphicProperty.findDict(property_id=oas_property.get('id'))
@@ -155,7 +155,7 @@ def property_id_to_spec(property_id):
         ref_schema = OasSchema.findDictById(ref_schema_id)
         ref_schema_name = ref_schema.get('schema_name')
         property_spec['$ref'] = f'#/components/schemas/{ref_schema_name}'
-        return property_spec
+        return { **property_spec, **validation_extras }
 
     else:
         raise Exception('Invalid property.')

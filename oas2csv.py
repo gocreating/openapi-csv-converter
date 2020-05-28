@@ -91,7 +91,7 @@ def handle_oas_property(oas_property, oas_property_name=None, property_object_re
         return oas_property_id
 
     elif oas_property_type == 'boolean':
-        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='boolean')
+        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='boolean', **validation_extras)
         return oas_property_id
 
     # valid type in json schema
@@ -100,7 +100,7 @@ def handle_oas_property(oas_property, oas_property_name=None, property_object_re
         return oas_property_id
 
     elif oas_property_type == 'array':
-        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='array')
+        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='array', **validation_extras)
         prop = oas_property.get('items')
         partial_property_id = handle_oas_property(prop)
         OasPolymorphicProperty.add(property_id=oas_property_id, partial_property_id=partial_property_id)
@@ -108,7 +108,10 @@ def handle_oas_property(oas_property, oas_property_name=None, property_object_re
 
     elif oas_property_type == 'object':
         additional_properties = oas_property.get('additionalProperties')
-        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='object', object_additional_properties=additional_properties if additional_properties != None else None)
+        oas_property_id = OasProperty.add(property_name=oas_property_name,
+                                          data_type='object',
+                                          object_additional_properties=additional_properties if additional_properties != None else None,
+                                          **validation_extras)
         requried_properties = oas_property.get('required')
         for prop_name, prop in oas_property.get('properties', {}).items():
             partial_property_id = handle_oas_property(prop, prop_name, True if requried_properties != None and prop_name in requried_properties else None)
@@ -116,28 +119,28 @@ def handle_oas_property(oas_property, oas_property_name=None, property_object_re
         return oas_property_id
 
     elif oas_property.get('oneOf'):
-        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='oneOf')
+        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='oneOf', **validation_extras)
         for prop in oas_property.get('oneOf'):
             partial_property_id = handle_oas_property(prop)
             OasPolymorphicProperty.add(property_id=oas_property_id, partial_property_id=partial_property_id)
         return oas_property_id
 
     elif oas_property.get('anyOf'):
-        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='anyOf')
+        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='anyOf', **validation_extras)
         for prop in oas_property.get('anyOf'):
             partial_property_id = handle_oas_property(prop)
             OasPolymorphicProperty.add(property_id=oas_property_id, partial_property_id=partial_property_id)
         return oas_property_id
 
     elif oas_property.get('allOf'):
-        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='allOf')
+        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='allOf', **validation_extras)
         for prop in oas_property.get('allOf'):
             partial_property_id = handle_oas_property(prop)
             OasPolymorphicProperty.add(property_id=oas_property_id, partial_property_id=partial_property_id)
         return oas_property_id
 
     elif oas_property.get('$ref'):
-        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='$ref')
+        oas_property_id = OasProperty.add(property_name=oas_property_name, data_type='$ref', **validation_extras)
         schema_name = oas_property.get('$ref').replace('#/components/schemas/', '')
         ref_schema_id = schemaNameIdMap.get(schema_name)
         OasPolymorphicProperty.add(property_id=oas_property_id, ref_schema_id=ref_schema_id)
