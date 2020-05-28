@@ -121,8 +121,6 @@ def property_id_to_spec(property_id):
                 property_spec['properties'][partial_property_name] = property_id_to_spec(partial_property_id)
             if len(required_properties) > 0:
                 property_spec['required'] = required_properties
-        if oas_property.get('property_name') == 'extra_data':
-            print('pause')
         additional_properties = oas_property.get('object_additional_properties')
         if additional_properties != None:
             property_spec['additionalProperties'] = str2bool(additional_properties)
