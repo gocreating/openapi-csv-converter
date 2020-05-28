@@ -18,6 +18,9 @@ components:
       properties:
         s1_p1:
           type: string
+        s1_p2:
+          # reference before definition
+          $ref: '#/components/schemas/Schema2'
     Schema2:
       type: array
       items:
@@ -28,6 +31,7 @@ components:
         s3_p1:
           type: number
         s3_p2:
+          # circular reference
           $ref: '#/components/schemas/Schema3'
 
 paths:
@@ -39,6 +43,7 @@ paths:
             schema:
               type: object
               properties:
+                # primitive types
                 p1:
                   type: string
                 p2:
@@ -74,6 +79,8 @@ paths:
                       properties:
                         p6_nested_2_1:
                           type: string
+
+                # porlymorphic types
                 p7:
                   oneOf:
                     - type: string
@@ -93,10 +100,16 @@ paths:
                         p9_2:
                           type: number
                     - $ref: '#/components/schemas/Schema1'
+
+                # reference
                 p10:
                   $ref: '#/components/schemas/Schema2'
                 p11:
                   $ref: '#/components/schemas/Schema3'
+
+                # jsonschema only types
+                p12:
+                  type: 'null'
       responses:
         '200':
           description: response description
